@@ -1,0 +1,94 @@
+[gd_scene load_steps=11 format=3 uid="uid://bfxmdbxcjx1mg"]
+
+[ext_resource type="Script" uid="uid://cgcah1er54po7" path="res://pad.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://bibpgh1wpq85e" path="res://ball_sprite.gd" id="2_0xm2m"]
+[ext_resource type="Script" uid="uid://cgf17gx47yxj2" path="res://ball_rigid_body_2d.gd" id="2_h2yge"]
+[ext_resource type="Script" uid="uid://dvbo1cw5ddn11" path="res://blocks.gd" id="4_1bvp3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ig7tw"]
+size = Vector2(207, 22)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1bvp3"]
+size = Vector2(10, 1280)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7mycd"]
+size = Vector2(720, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lquwl"]
+size = Vector2(1280, 1)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_0xm2m"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_h2yge"]
+
+[node name="main" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Pad" type="Node2D" parent="."]
+position = Vector2(0, 600)
+script = ExtResource("1_ig7tw")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="Pad"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pad/CharacterBody2D"]
+position = Vector2(0.5, 1)
+shape = SubResource("RectangleShape2D_ig7tw")
+
+[node name="ColorRect" type="ColorRect" parent="Pad/CharacterBody2D"]
+offset_left = -103.0
+offset_top = -10.0
+offset_right = 104.0
+offset_bottom = 12.0
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Walls"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/StaticBody2D"]
+position = Vector2(-360.5, 0)
+shape = SubResource("RectangleShape2D_1bvp3")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Walls/StaticBody2D"]
+position = Vector2(0, -640)
+rotation = -3.14159
+shape = SubResource("RectangleShape2D_7mycd")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="Walls/StaticBody2D"]
+position = Vector2(360, 0)
+rotation = -1.5708
+shape = SubResource("RectangleShape2D_lquwl")
+
+[node name="BottomStaticBody2D" type="StaticBody2D" parent="Walls"]
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Walls/BottomStaticBody2D"]
+position = Vector2(0, 640)
+shape = SubResource("WorldBoundaryShape2D_0xm2m")
+
+[node name="Ball" type="Node2D" parent="." groups=["ball"]]
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball" groups=["ball"]]
+gravity_scale = 0.0
+continuous_cd = 2
+script = ExtResource("2_h2yge")
+
+[node name="BallSprite" type="Sprite2D" parent="Ball/RigidBody2D"]
+script = ExtResource("2_0xm2m")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball/RigidBody2D" groups=["ball"]]
+shape = SubResource("CircleShape2D_h2yge")
+
+[node name="TrajectoryLine2D" type="Line2D" parent="Ball/RigidBody2D"]
+
+[node name="Blocks" type="Node2D" parent="."]
+script = ExtResource("4_1bvp3")
+
+[node name="ShiftTimer" type="Timer" parent="Blocks"]
+autostart = true
+
+[node name="Label" type="Label" parent="."]
+offset_left = -564.0
+offset_top = -39.0
+offset_right = -488.0
+offset_bottom = -16.0
+text = "0"
