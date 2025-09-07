@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://bfxmdbxcjx1mg"]
 
-[ext_resource type="Script" uid="uid://cgcah1er54po7" path="res://pad.gd" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://bibpgh1wpq85e" path="res://ball_sprite.gd" id="2_0xm2m"]
+[ext_resource type="Script" uid="uid://cwy34xppk8go5" path="res://character_body_2d.gd" id="2_1bvp3"]
 [ext_resource type="Script" uid="uid://cgf17gx47yxj2" path="res://ball_rigid_body_2d.gd" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://dvbo1cw5ddn11" path="res://blocks.gd" id="4_1bvp3"]
 
@@ -25,17 +25,15 @@ size = Vector2(1280, 1)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="Pad" type="Node2D" parent="."]
+[node name="Pad" type="CharacterBody2D" parent="."]
 position = Vector2(0, 600)
-script = ExtResource("1_ig7tw")
+script = ExtResource("2_1bvp3")
 
-[node name="CharacterBody2D" type="CharacterBody2D" parent="Pad"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Pad/CharacterBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pad"]
 position = Vector2(0.5, 1)
 shape = SubResource("RectangleShape2D_ig7tw")
 
-[node name="ColorRect" type="ColorRect" parent="Pad/CharacterBody2D"]
+[node name="ColorRect" type="ColorRect" parent="Pad"]
 offset_left = -103.0
 offset_top = -10.0
 offset_right = 104.0
@@ -65,20 +63,16 @@ shape = SubResource("RectangleShape2D_lquwl")
 position = Vector2(0, 640)
 shape = SubResource("WorldBoundaryShape2D_0xm2m")
 
-[node name="Ball" type="Node2D" parent="." groups=["ball"]]
-
-[node name="RigidBody2D" type="RigidBody2D" parent="Ball" groups=["ball"]]
-gravity_scale = 0.0
-continuous_cd = 2
+[node name="Ball" type="RigidBody2D" parent="." groups=["ball"]]
 script = ExtResource("2_h2yge")
 
-[node name="BallSprite" type="Sprite2D" parent="Ball/RigidBody2D"]
+[node name="BallSprite" type="Sprite2D" parent="Ball"]
 script = ExtResource("2_0xm2m")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball/RigidBody2D" groups=["ball"]]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball" groups=["ball"]]
 shape = SubResource("CircleShape2D_h2yge")
 
-[node name="TrajectoryLine2D" type="Line2D" parent="Ball/RigidBody2D"]
+[node name="TrajectoryLine2D" type="Line2D" parent="Ball"]
 
 [node name="Blocks" type="Node2D" parent="."]
 script = ExtResource("4_1bvp3")
@@ -87,8 +81,8 @@ script = ExtResource("4_1bvp3")
 autostart = true
 
 [node name="Label" type="Label" parent="."]
-offset_left = -564.0
-offset_top = -39.0
-offset_right = -488.0
-offset_bottom = -16.0
+offset_left = -301.0
+offset_top = 287.0
+offset_right = -225.0
+offset_bottom = 310.0
 text = "0"
