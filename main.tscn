@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bibpgh1wpq85e" path="res://ball_sprite.gd" id="2_0xm2m"]
 [ext_resource type="Script" uid="uid://cwy34xppk8go5" path="res://character_body_2d.gd" id="2_1bvp3"]
 [ext_resource type="Script" uid="uid://cgf17gx47yxj2" path="res://ball_rigid_body_2d.gd" id="2_h2yge"]
-[ext_resource type="Script" uid="uid://dvbo1cw5ddn11" path="res://blocks.gd" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://dvbo1cw5ddn11" path="res://block_manager.gd" id="4_1bvp3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ig7tw"]
 size = Vector2(207, 22)
@@ -74,10 +74,11 @@ shape = SubResource("CircleShape2D_h2yge")
 
 [node name="TrajectoryLine2D" type="Line2D" parent="Ball"]
 
-[node name="Blocks" type="Node2D" parent="."]
+[node name="BlockManager" type="Node2D" parent="."]
 script = ExtResource("4_1bvp3")
 
-[node name="ShiftTimer" type="Timer" parent="Blocks"]
+[node name="ShiftTimer" type="Timer" parent="BlockManager"]
+wait_time = 5.0
 autostart = true
 
 [node name="Label" type="Label" parent="."]

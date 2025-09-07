@@ -19,9 +19,11 @@ var color: Color = Color.WHITE:
 		if color_rect:
 			color_rect.color = color
 			
-var row_id : int = 0
+var row_id: int = 0
+var col_id: int = 0
 var target_pos: Vector2 = Vector2.ZERO
-var block_manager: Node2D
+var is_being_deleted: bool = false
+var block_manager: BlockManager
 
 func get_target():
 	if target_pos:
@@ -43,10 +45,12 @@ func _ready() -> void:
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("ball"):
 		return
-		
+	
+	destroy()
 	if block_manager:
 		block_manager.inc_score(1)
-	destroy()
+		block_manager.delete_same_color_adjacent_blocks(row_id)
+	
 
 
 func _physics_process(delta):
@@ -68,6 +72,7 @@ func _physics_process(delta):
 
 
 func destroy():
+	is_being_deleted = true
 	# --- Spawn Particles ---
 	var particles = cpu_particles_2d.duplicate()
 	particles.global_position = global_position

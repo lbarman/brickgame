@@ -1,5 +1,5 @@
 extends Node2D
-
+class_name BlockManager
 
 @export_group("Grid")
 @export var num_rows: int = 2
@@ -24,7 +24,18 @@ var score: int = 0:
 	set(s):
 		score = s
 		if label:
-			label.text = str(s)
+			label.text = "Score: "+str(s)
+
+var color_palette = [
+	Color("d90429"), # Paradise Pink
+	Color("f94144"), # Imperial Red
+	Color("f9844a"), # Mango Tango
+	Color("f9c74f"), # Saffron
+	Color("90be6d"), # Pistachio
+	Color("43aa8b"), # Zomp
+	Color("4d908e"), # Queen Blue
+	Color("577590"), # Payne's Gray
+]
 
 func inc_score(d):
 	score += d
@@ -58,45 +69,49 @@ func _on_shift_timer_timeout():
 	spawn_timer.start()
 	
 func spawn_row(y_pos: float = spawn_y):
+	var prev_color = Color.WHEAT
 	var row_id = next_row_id
 	next_row_id += 1
 	for col in range(num_columns):
 		var x_pos = spawn_x + col * (block_size.x + horizontal_spacing)
-		spawn_block(next_row_id, Vector2(x_pos, y_pos))
+		var block = spawn_block(next_row_id, col, Vector2(x_pos, y_pos), prev_color)
+		prev_color = block.color
 	
-func spawn_block(row_id: int, pos: Vector2):
+func spawn_block(row_id: int, col_id: int, pos: Vector2, prev_color: Color) -> BlockTemplate:
 	var block: BlockTemplate = blockTemplate.instantiate()
 	block.position = pos
-	block.color = Color.WHITE
+	block.color = color_palette.pick_random()
+	var color: Color
+	var available_colors = color_palette.filter(func(c): return c != prev_color)
+	if not available_colors.is_empty():
+		color = available_colors.pick_random()
+	else:
+		color = color_palette[0]
+	block.color = color
 	block.row_id = row_id
+	block.col_id = col_id
 	block.block_manager = self
 	add_child(block)
 	blocks.append(block)
+	return block
 
-func delete_same_color_adjacent_blocks():	
-	if blocks.size() < 2:
-		return
+func delete_same_color_adjacent_blocks(row):
+	var blocks_this_row: Array[BlockTemplate] = []
+	for block in blocks:
+		if is_instance_valid(block) and !block.is_being_deleted && block.row_id == row:
+			blocks_this_row.append(block)
+				
+	blocks_this_row.sort_custom(sort_by_col)
+	
+	var to_destroy = {} # use key set only
+	for i in range(blocks_this_row.size()-1):
+		if blocks_this_row[i].color == blocks_this_row[i+1].color:
+			to_destroy[i] = blocks_this_row[i]
+			to_destroy[i+1] = blocks_this_row[i+1]
+	
+	for k in to_destroy:
+		to_destroy[k].destroy()
+		
 
-	var blocks_to_destroy = []
-	var match_group = [blocks[0]]
-
-	for i in range(1, blocks.size()):
-		var current_block = blocks[i]
-		var last_block_in_group = match_group.back()
-
-		var current_color = current_block.get_node("ColorRect").color
-		var last_color = last_block_in_group.get_node("ColorRect").color
-
-		if current_color == last_color:
-			match_group.append(current_block)
-		else:
-			if match_group.size() >= 2:
-				blocks_to_destroy.append_array(match_group)
-			match_group = [current_block]
-
-	if match_group.size() >= 2:
-		blocks_to_destroy.append_array(match_group)
-
-	for block in blocks_to_destroy:
-		if is_instance_valid(block):
-			block.destroy()
+static func sort_by_col(a, b):
+	return a.col_id < b.col_id
