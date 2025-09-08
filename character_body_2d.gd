@@ -11,7 +11,7 @@ extends CharacterBody2D
 @export var tilt_return_speed: float = 5.0  # How quickly the object returns to flat.
 
 @export_group("Vertical Movement")
-@export var vertical_speed: float = 500.0   # How fast the platform moves up.
+@export var vertical_speed: float = 1000.0   # How fast the platform moves up.
 @export var max_y_offset: float = 200.0     # How high it can go from its start position.
 @export var return_y_speed: float = 5.0     # How quickly it returns to its start position.
 

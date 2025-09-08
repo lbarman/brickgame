@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://bfxmdbxcjx1mg"]
+[gd_scene load_steps=13 format=3 uid="uid://bfxmdbxcjx1mg"]
 
 [ext_resource type="Script" uid="uid://bibpgh1wpq85e" path="res://ball_sprite.gd" id="2_0xm2m"]
 [ext_resource type="Script" uid="uid://cwy34xppk8go5" path="res://character_body_2d.gd" id="2_1bvp3"]
 [ext_resource type="Script" uid="uid://cgf17gx47yxj2" path="res://ball_rigid_body_2d.gd" id="2_h2yge"]
 [ext_resource type="Script" uid="uid://dvbo1cw5ddn11" path="res://block_manager.gd" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://d3k1uoo0loxdy" path="res://slow_zone.gd" id="5_lquwl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ig7tw"]
 size = Vector2(207, 22)
@@ -20,6 +21,9 @@ size = Vector2(1280, 1)
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_0xm2m"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_h2yge"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_272bh"]
+size = Vector2(720, 300)
 
 [node name="main" type="Node2D"]
 
@@ -64,6 +68,7 @@ position = Vector2(0, 640)
 shape = SubResource("WorldBoundaryShape2D_0xm2m")
 
 [node name="Ball" type="RigidBody2D" parent="." groups=["ball"]]
+mass = 0.01
 script = ExtResource("2_h2yge")
 
 [node name="BallSprite" type="Sprite2D" parent="Ball"]
@@ -87,3 +92,14 @@ offset_top = 287.0
 offset_right = -225.0
 offset_bottom = 310.0
 text = "0"
+
+[node name="SlowZone" type="Area2D" parent="."]
+visible = false
+script = ExtResource("5_lquwl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SlowZone"]
+position = Vector2(0, 485)
+shape = SubResource("RectangleShape2D_272bh")
+
+[connection signal="body_entered" from="SlowZone" to="SlowZone" method="_on_body_entered"]
+[connection signal="body_exited" from="SlowZone" to="SlowZone" method="_on_body_exited"]
