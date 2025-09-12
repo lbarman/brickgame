@@ -28,6 +28,7 @@ var min_max_x: float = 0
 var initial_y: float = 0.0
 var last_hit_time: int = 0
 var is_rising: bool = false
+var cant_rise: bool = false
 
 func _ready() -> void:
 	min_max_x = get_viewport_rect().size.x/2 - color_rect.size.x/2
@@ -56,7 +57,7 @@ func _physics_process(delta: float) -> void:
 	
 	# Vertical movement
 	# "ui_accept" is the default mapping for the Spacebar.
-	if Input.is_action_pressed("ui_accept"):
+	if Input.is_action_pressed("ui_accept") && !cant_rise:
 		is_rising = true
 		if position.y > initial_y - max_y_offset:
 			target_velocity.y = -vertical_speed
@@ -66,6 +67,8 @@ func _physics_process(delta: float) -> void:
 		# Smoothly return to the initial Y position
 		target_velocity.y = (initial_y - position.y) * return_y_speed
 		is_rising = false
+		if cant_rise && (initial_y - position.y) < 1:
+			cant_rise = false
 	
 	velocity = target_velocity
 	move_and_slide()
@@ -86,14 +89,18 @@ func _physics_process(delta: float) -> void:
 	for i in range(get_slide_collision_count()):
 		var collision = get_slide_collision(i)
 		if collision.get_collider().is_in_group("ball"):
-			ball_collision()
+			ball_collision(collision)
 	
-func ball_collision():
+func ball_collision(collision: KinematicCollision2D):
 	var current_time = Time.get_ticks_msec()
 	if last_hit_time == -1 || current_time - last_hit_time > hit_debounce_delay * 1000:
 		last_hit_time = current_time
-		ball_collision_debounced()
+		ball_collision_debounced(collision)
 		
-func ball_collision_debounced():
+func ball_collision_debounced(collision: KinematicCollision2D):
+	print("Ball collision debounced")
 	if is_rising:
+		print("is rising", collision.get_angle()*90/PI)
 		ball.speed_up()
+		cant_rise = true
+		ball.linear_velocity = Vector2.UP.rotated(deg_to_rad(rotation_degrees))
