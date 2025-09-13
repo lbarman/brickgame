@@ -36,7 +36,7 @@ func _ready():
 	
 	# Initial angle is 90° facing up
 	linear_velocity = Vector2.RIGHT.rotated(randf_range(0, PI/2)-PI/4) * min_speed
-	linear_velocity = Vector2.UP
+	linear_velocity = Vector2.DOWN.rotated(5*PI/90)
 
 	# Change the ball color with speed.
 	if ball_sprite:
@@ -93,6 +93,7 @@ func _update_trajectory():
 		var query = PhysicsRayQueryParameters2D.create(current_pos, next_pos)
 		query.exclude = [self.get_rid()] # Exclude the ball itself from the query.
 		query.collision_mask = 0xFFFFFFFF
+		query.collide_with_bodies = true
 		
 		var result = space_state.intersect_ray(query)
 		

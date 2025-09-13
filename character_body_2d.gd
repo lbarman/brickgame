@@ -98,9 +98,8 @@ func ball_collision(collision: KinematicCollision2D):
 		ball_collision_debounced(collision)
 		
 func ball_collision_debounced(collision: KinematicCollision2D):
-	print("Ball collision debounced")
 	if is_rising:
-		print("is rising", collision.get_angle()*90/PI)
-		ball.speed_up()
+		#ball.speed_up()
 		cant_rise = true
-		ball.linear_velocity = Vector2.UP.rotated(deg_to_rad(rotation_degrees))
+		#var impulse = -collision.get_normal() * ball.linear_velocity.length() * 2.0
+		#ball.apply_central_impulse(impulse)

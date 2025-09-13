@@ -30,7 +30,7 @@ size = Vector2(720, 300)
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="Pad" type="CharacterBody2D" parent="."]
-position = Vector2(0, 600)
+position = Vector2(-100, 600)
 script = ExtResource("2_1bvp3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pad"]
