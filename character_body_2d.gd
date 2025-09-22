@@ -1,4 +1,4 @@
-extends CharacterBody2D
+extends StaticBody2D
 
 @export_group("Horizontal Movement")
 @export var initial_speed: int = 300 # The speed when movement starts.
@@ -21,6 +21,7 @@ extends CharacterBody2D
 @onready var camera_2d: Camera2D = $"../Camera2D"
 @onready var color_rect: ColorRect = $ColorRect
 @onready var ball: RigidBody2D = $"../Ball"
+@onready var shape_cast_2d: ShapeCast2D = $ShapeCast2D
 
 var current_speed: float = 0.0
 var last_direction: int = 0
@@ -29,6 +30,7 @@ var initial_y: float = 0.0
 var last_hit_time: int = 0
 var is_rising: bool = false
 var cant_rise: bool = false
+var collision_normal: Vector2
 
 func _ready() -> void:
 	min_max_x = get_viewport_rect().size.x/2 - color_rect.size.x/2
@@ -36,42 +38,33 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	
-	var target_velocity = Vector2.ZERO
-	
 	# Horizontal movement
 	var direction = Input.get_axis("ui_left", "ui_right")
 	
-	if direction != 0 && abs(position.x) != min_max_x:
+	if direction != 0:
 		current_speed += acceleration * delta
 		current_speed = min(current_speed, max_speed)
-		target_velocity.x = direction * current_speed
+		position.x += direction * current_speed * delta
 
 	else:
-		current_speed = initial_speed		
-		target_velocity.x = move_toward(velocity.x, 0, acceleration * delta)
+		current_speed = initial_speed
 
-	if position.x <= -min_max_x and target_velocity.x < 0:
-		target_velocity.x = 0
-	if position.x >= min_max_x and target_velocity.x > 0:
-		target_velocity.x = 0
+	position.x = clamp(position.x, -min_max_x, min_max_x)
 	
 	# Vertical movement
 	# "ui_accept" is the default mapping for the Spacebar.
 	if Input.is_action_pressed("ui_accept") && !cant_rise:
 		is_rising = true
 		if position.y > initial_y - max_y_offset:
-			target_velocity.y = -vertical_speed
+			position.y -= vertical_speed * delta
 		else:
-			target_velocity.y = 0
+			position.y = initial_y - max_y_offset
 	else:
 		# Smoothly return to the initial Y position
-		target_velocity.y = (initial_y - position.y) * return_y_speed
+		position.y = lerp(position.y, initial_y, return_y_speed * delta)
 		is_rising = false
 		if cant_rise && (initial_y - position.y) < 1:
 			cant_rise = false
-	
-	velocity = target_velocity
-	move_and_slide()
 	
 	# Tilting
 	var target_rotation = 0.0
@@ -84,22 +77,12 @@ func _physics_process(delta: float) -> void:
 	else:
 		# In all other cases, slowly return to a flat position.
 		rotation_degrees = lerp(rotation_degrees, 0.0, tilt_return_speed * delta)
-		
-	# Collision Detection
-	for i in range(get_slide_collision_count()):
-		var collision = get_slide_collision(i)
-		if collision.get_collider().is_in_group("ball"):
-			ball_collision(collision)
-	
-func ball_collision(collision: KinematicCollision2D):
-	var current_time = Time.get_ticks_msec()
-	if last_hit_time == -1 || current_time - last_hit_time > hit_debounce_delay * 1000:
-		last_hit_time = current_time
-		ball_collision_debounced(collision)
-		
-func ball_collision_debounced(collision: KinematicCollision2D):
-	if is_rising:
-		#ball.speed_up()
-		cant_rise = true
-		#var impulse = -collision.get_normal() * ball.linear_velocity.length() * 2.0
-		#ball.apply_central_impulse(impulse)
+
+	if shape_cast_2d.is_colliding():
+		var collider = shape_cast_2d.get_collider(0)
+		if collider and collider.is_in_group("ball"):
+			cant_rise = true
+			var collision_normal = shape_cast_2d.get_collision_normal(0)
+			var impulse = -collision_normal * ball.linear_velocity.length() * 2.0
+			ball.apply_central_impulse(impulse)
+			print("can't rise = true")

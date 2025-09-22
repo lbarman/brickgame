@@ -17,7 +17,7 @@ extends RigidBody2D
 @export var trajectory_color_end: Color = Color(1, 1, 1, 0)
 @export var trajectory_max_bounces: int = 3
 
-@onready var bottom_wall: StaticBody2D = $"../../Walls/BottomStaticBody2D"
+@onready var bottom_wall: StaticBody2D = $"../Walls/BottomStaticBody2D"
 @onready var ball_sprite: Sprite2D = $BallSprite
 @onready var trajectory_line: Line2D = $TrajectoryLine2D
 
@@ -93,7 +93,6 @@ func _update_trajectory():
 		var query = PhysicsRayQueryParameters2D.create(current_pos, next_pos)
 		query.exclude = [self.get_rid()] # Exclude the ball itself from the query.
 		query.collision_mask = 0xFFFFFFFF
-		query.collide_with_bodies = true
 		
 		var result = space_state.intersect_ray(query)
 		

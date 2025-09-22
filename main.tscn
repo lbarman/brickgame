@@ -29,9 +29,13 @@ size = Vector2(720, 300)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="Pad" type="CharacterBody2D" parent="."]
+[node name="Pad" type="StaticBody2D" parent="."]
 position = Vector2(-100, 600)
 script = ExtResource("2_1bvp3")
+
+[node name="ShapeCast2D" type="ShapeCast2D" parent="Pad"]
+shape = SubResource("RectangleShape2D_ig7tw")
+target_position = Vector2(0, -1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pad"]
 position = Vector2(0.5, 1)
